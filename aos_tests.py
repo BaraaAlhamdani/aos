@@ -12,4 +12,7 @@ class AosAppPositiveTestCases(unittest.TestCase):  # create class
         methods.log_out()
         methods.log_in()
         methods.log_out()
+        methods.check_homepage_texts()
+        methods.contact_us()
+        methods.social_media_link()
         methods.tearDown()

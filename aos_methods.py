@@ -2,10 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 import aos_locators as locators
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select  # add this import for drop down list
 from time import sleep
 import datetime
 import sys
-
 
 s = Service(executable_path='../chromedriver.exe')
 driver = webdriver.Chrome(service=s)
@@ -68,7 +68,6 @@ def new_account():
     # Validate New Account created (new username is displayed in the top menu)
     assert driver.find_element(By.XPATH, f'//*[contains(.,"{locators.new_username}")]').is_displayed()
     print('New user account is created')
-    #logger('created')
 
 
 def log_in():
@@ -125,7 +124,56 @@ def check_homepage_texts():
         assert driver.find_element(By.ID, 'supportCover').is_displayed()
         print('CONTACT US Link is clickable')
         sleep(0.25)
+        driver.find_element(By.CLASS_NAME, 'logo').is_displayed()
+        print('logo is displayed')
+        sleep(0.25)
 
+
+def contact_us():
+    driver.find_element(By.LINK_TEXT, 'CONTACT US').click()
+    sleep(0.25)
+    assert driver.find_element(By.ID, 'supportCover').is_displayed()
+    sleep(0.25)
+    Select(driver.find_element(By.XPATH, '//*[contains(@name,"categoryListboxContactUs")]')).select_by_visible_text('Laptops')
+    sleep(0.25)
+    Select(driver.find_element(By.XPATH, '//*[contains(@name, "productListboxContactUs")]')).select_by_visible_text('HP Chromebook 14 G1(ES)')
+    sleep(0.25)
+    driver.find_element(By.XPATH, '//*[contains(@name, "emailContactUs")]').send_keys(locators.email)
+    sleep(0.25)
+    driver.find_element(By.XPATH, '//*[contains(@name, "subjectTextareaContactUs")]').send_keys(locators.description)
+    sleep(0.25)
+    driver.find_element(By.ID, 'send_btnundefined').click()
+    sleep(0.25)
+    driver.find_element(By.XPATH, '//*[contains(., "Thank you for contacting Advantage support.")]').is_displayed()
+    sleep(0.25)
+    print('Thank you for contacting Advantage support. message is displayed')
+    sleep(0.25)
+    driver.find_element(By.XPATH, '//div[contains(., " CONTINUE SHOPPING ")]').click()
+    sleep(0.25)
+    print('CONTINUE SHOPPING button is clickable')
+    assert driver.current_url == locators.AOS_url
+    print('You are on homepage')
+
+
+def social_media_link():
+    #driver.find_element(By.XPATH, '//*[conatins(@h3, "FOLLOW US")]').is_displayed()
+    driver.find_element(By.TAG_NAME, 'h3')
+    #driver.find_element(By.LINK_TEXT, 'FOLLOW US').is_displayed()
+    sleep(0.25)
+    assert driver.find_element(By.XPATH, '//*[contains(@name, "follow_facebook")]').is_displayed()
+    driver.find_element(By.XPATH, '//*[contains(@name, "follow_facebook")]').click()
+    sleep(2)
+    print('facebook link is clicked')
+    sleep(0.25)
+    assert driver.find_element(By.XPATH, '//*[contains(@name, "follow_twitter")]').is_displayed()
+    driver.find_element(By.XPATH, '//*[contains(@name, "follow_twitter")]').click()
+    sleep(2)
+    print('twitter link is clicked')
+    assert driver.find_element(By.XPATH, '//*[contains(@name, "follow_linkedin")]').is_displayed()
+    driver.find_element(By.XPATH, '//*[contains(@name, "follow_linkedin")]').click()
+    sleep(2)
+    print('linkedin link is clicked')
+    sleep(2)
 
 
 def log_out():
@@ -134,32 +182,9 @@ def log_out():
     driver.find_element(By.XPATH, '//*[@id="loginMiniTitle"]/label[contains(.,"Sign out")]').click()
     sleep(0.25)
     print('You logged out\nThank you for shopping')
+    sleep(3)
 
-
-def delete_user_account():
-    driver.find_element(By.ID, 'menuUser').click()
-    assert driver.find_element(By.XPATH, '//*[@id="loginMiniTitle"]').is_displayed()
-    driver.find_element(By.XPATH, f'//*[contains(.,"{locators.new_username}")]').click()
-    assert driver.find_element(By.XPATH, '//*[contains(.,"My account")]').is_displayed()
-    sleep(0.25)
-    driver.find_element(By.XPATH, '//*[@id="loginMiniTitle"]/label[contains(.,"My account")]').click()
-    driver.find_element(By.ID, 'hrefUserIcon').click()
-    java_script = driver.find_element(By.XPATH, '//label[contains(.,"My account")]')
-    driver.execute_script("arguments[0].click();", java_script)
-    sleep(0.5)
-    assert driver.current_url == locators.AOS_my_account_url
-    sleep(0.25)
-    driver.find_element(By.CLASS_NAME, 'deleteBtnText').click()
-    sleep(5)
-    #assert driver.find_element(By.CLASS_NAME, 'deleteAccountPopupContent').is_displayed()
-    #sleep(2)
-    driver.find_element(By.XPATH, '//div[contains(., "yes")]').click()
-    sleep(5)
-
-    #assert driver.current_url == locators.AOS_url
-    #sleep(0.25)
-    print(f'User {locators.new_username} is deleted')
-    #logger('deleted')
+    
 
 
 def tearDown():
@@ -171,25 +196,12 @@ def tearDown():
         driver.quit()
 
 
-def logger(action):
-    # create variable to store the file content
-    old_instance = sys.stdout
-    log_file = open('../aos/message.log', 'a')  # open log file and append a record
-    sys.stdout = log_file
-    print(f'{locators.email}\t'
-          f'{locators.new_username}\t'
-          f'{locators.new_password}\t'
-          f'{datetime.datetime.now()}\t'
-          f'{action}')
-    sys.stdout = old_instance
-    log_file.close()
-
-
-# setUp()
-# #check_homepage_texts()
-# new_account()
-# log_out()
-# log_in()
-# #log_out()
-# #delete_user_account()
-# tearDown()
+#setUp()
+#check_homepage_texts()
+#contact_us()
+#social_media_link()
+#new_account()
+#log_out()
+#log_in()
+#delete_user_account()
+#tearDown()
