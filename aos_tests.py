@@ -9,10 +9,7 @@ class AosAppPositiveTestCases(unittest.TestCase):  # create class
     def test_create_new_user():
         methods.setUp()
         methods.new_account()
-        methods.log_out()
-        methods.log_in()
-        methods.log_out()
-        methods.check_homepage_texts()
-        methods.contact_us()
-        methods.social_media_link()
+        methods.add_shopping_cart_item()
+        methods.checkout_shopping_cart()
         methods.tearDown()
+
