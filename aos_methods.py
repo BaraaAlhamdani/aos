@@ -7,6 +7,7 @@ from time import sleep
 import datetime
 import sys
 
+
 s = Service(executable_path='../chromedriver.exe')
 driver = webdriver.Chrome(service=s)
 
@@ -82,85 +83,43 @@ def new_account():
     # Validate New Account created (new username is displayed in the top menu)
     assert driver.find_element(By.XPATH, f'//*[contains(.,"{locators.new_username}")]').is_displayed()
     print('New user account is created')
+    logger('created')
 
 
 
-
-def add_shopping_cart_item():
-    driver.find_element(By.ID, 'tabletsTxt').click()
-    sleep(0.25)
-    driver.find_element(By.LINK_TEXT, 'HP ElitePad 1000 G2 Tablet').click()
-    sleep(2)
-    driver.find_element(By.XPATH, '//button[contains(.,"ADD TO CART")]').click()
-    sleep(0.25)
-    print('New item is added to shopping cart')
-    sleep(2)
-
-
-def checkout_shopping_cart():
-    print('Checkout shopping cart')
-    driver.find_element(By.ID, 'menuCart').click()
-    sleep(1)
-    driver.find_element(By.ID, 'checkOutButton').click()
-    sleep(0.25)
-    assert driver.find_element(By.XPATH, f'//*[contains(.,"{locators.new_username}")]').is_displayed()
-    sleep(0.25)
-    driver.find_element(By.ID, 'next_btn').click()
-    sleep(0.25)
-    driver.find_element(By.XPATH, '//*[contains(@name, "safepay_username")]').send_keys(locators.new_username)
-    sleep(0.25)
-    driver.find_element(By.XPATH, '//*[contains(@name, "safepay_password")]').send_keys(locators.new_password1)
-    sleep(0.25)
-    driver.find_element(By.ID, 'pay_now_btn_SAFEPAY').click()
-    sleep(0.25)
-    driver.find_element(By.TAG_NAME, 'h2').is_displayed()
-    print('Thank you for buying with Advantage Online Shopping')
-    sleep(0.25)
-    tr = driver.find_element(By.ID, 'trackingNumberLabel')
-    print(f'Your tracking number is: {tr.text}')
-    sleep(0.25)
-    on = driver.find_element(By.ID, 'orderNumberLabel')
-    print(f'Your order number is: {on.text}')
-    sleep(0.25)
-    assert driver.find_element(By.XPATH, f'//*[contains(.,"{locators.new_username}")]').is_displayed()
-    print(f'Name of customer: {locators.full_name}')
-    driver.find_element(By.XPATH, f'//*[contains(., "{locators.address}")]').is_displayed()
-    sleep(1)
-    driver.find_element(By.XPATH, f'//*[contains(., "{locators.city}")]').is_displayed()
-    sleep(1)
-    driver.find_element(By.XPATH, f'//*[contains(., "{locators.province}")]').is_displayed()
-    sleep(1)
-    driver.find_element(By.XPATH, f'//*[contains(., "{locators.phone}")]').is_displayed()
-    sleep(1)
-    print(f'Customer address is: {locators.address}\n{locators.city}\n{locators.province}')
-    print(f'Customer phone number is: {locators.phone}')
-    total = driver.find_element(By. XPATH, '//label[contains(., "TOTAL")]/a[@class="floater ng-binding"]')
-    print(f'Your total amount is: {total.text}')
-    sleep(0.25)
-    date_ordered = driver.find_element(By. XPATH, '//label[contains(., "Date ordered")]/a[@class="floater ng-binding"]')
-    print(f'Date ordered: {date_ordered.text}')
-    sleep(0.25)
-    # view order
+def check_no_order():
     driver.find_element(By.ID, 'menuUserLink').click()
-    sleep(3)
+    sleep(0.25)
     driver.find_element(By.XPATH, '//*[@id="loginMiniTitle"]/label[contains(.,"My orders")]').click()
-    #driver.find_element(By.LINK_TEXT, 'My orders').click()
-    sleep(5)
-    view_order = driver.find_element(By. XPATH, f'//*[@class="left ng-binding"]')
-    # driver.find_element(By.XPATH, f'//*[contains(.,"{on.text}")]').is_displayed()
-    print(f'Your oder number is displayed')
+    sleep(0.25)
+    driver.find_element(By.XPATH, '//*[contains(., " - No orders - ")]').is_displayed()
+    print('No orders Found')
+    sleep(0.25)
+
+
+
+def delete_user_account():
+    driver.find_element(By.ID, 'menuUser').click()
+    sleep(1)
+    driver.find_element(By.XPATH, '//*[@id="loginMiniTitle"]/label[contains(.,"My account")]').click()
+    sleep(0.25)
+    driver.find_element(By.ID, 'hrefUserIcon').is_displayed()
+    sleep(0.25)
+    driver.find_element(By.CLASS_NAME, 'deleteBtnText').click()
     sleep(2)
-
-
-def log_out():
-    driver.find_element(By.ID, 'menuUserLink').click()
-    sleep(5)
-    driver.find_element(By.XPATH, '//*[@id="loginMiniTitle"]/label[contains(.,"Sign out")]').click()
-    sleep(3)
-    print('You logged out\nThank you for shopping')
-    sleep(3)
-
-
+    driver.find_element(By.CLASS_NAME, 'deleteBtnContainer').click()
+    sleep(2)
+    print(f'User {locators.new_username} is deleted')
+    sleep(0.5)
+    logger('deleted')
+    sleep(0.25)
+    driver.find_element(By.ID, 'menuUser').click()
+    sleep(0.25)
+    driver.find_element(By.XPATH, '//input[contains(@name,"username")]').send_keys(locators.new_username)
+    sleep(0.25)
+    driver.find_element(By.ID, 'signInResultMessage').is_displayed()
+    print('User delete validated')
+    sleep(0.25)
 
 
 def tearDown():
@@ -172,11 +131,33 @@ def tearDown():
         driver.quit()
 
 
+def logger(action):
+    # create variable to store the file content
+    old_instance = sys.stdout
+    log_file = open('../aos/message.log', 'a')  # open log file and append a record
+    sys.stdout = log_file
+    print(f'{locators.email}\t'
+          f'{locators.new_username}\t'
+          f'{locators.new_password}\t'
+          f'{datetime.datetime.now()}\t'
+          f'{action}')
+    sys.stdout = old_instance
+    log_file.close()
 
-#
+
 # setUp()
 # new_account()
+# check_no_order()
+# delete_user_account()
+# tearDown()
 # add_shopping_cart_item()
 # checkout_shopping_cart()
+#log_out()
+# check_homepage_texts()
+# contact_us()
+# social_media_link()
+# new_account()
 # log_out()
-# tearDown()
+# log_in()
+# delete_user_account()
+#tearDown()
