@@ -18,6 +18,7 @@ class AosAppPositiveTestCases(unittest.TestCase):  # create class
         methods.checkout_shopping_cart()
         methods.check_no_order()
         methods.delete_user_account()
+        methods.validate_user_deleted()
         methods.tearDown()
 
 

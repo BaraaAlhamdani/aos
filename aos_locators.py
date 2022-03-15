@@ -9,7 +9,7 @@ AOS_my_account_url = 'https://advantageonlineshopping.com/#/myAccount'
 AOS_chat_with_us_url = 'https://advantageonlineshopping.com/chat.html'
 AOS_chat_with_us_title = 'Advantage Online Shopping Demo Support Chat'
 AOS_order_payment = 'https://advantageonlineshopping.com/#/orderPayment'
-
+# -----------------------------------------------
 
 # -------- data section -------------
 first_name = fake.first_name()[:7]
